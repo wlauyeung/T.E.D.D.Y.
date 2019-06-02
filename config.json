@@ -1,3 +1,57 @@
 {
-  "token": ""
+  "token": "",
+  "prefix": "!",
+  "commands": {
+    "setreactrole": "setreactrole"
+  },
+  "reactionRoles": {
+    "denizen": {
+      "name": "denizen",
+      "title": "Denizen Roles",
+      "description": "React with these emoji to set your denizen role.",
+      "footer": "Remove your reaction to remove the role.",
+      "roles": [
+        "Bears",
+        "Berkeleyan",
+        "Not a Bear"
+      ],
+      "emoji": [
+        "bear",
+        "bush",
+        "llama" 
+      ]
+    },
+    "gamemode": {
+      "name": "gamemode",
+      "title": "Game Mode Roles",
+      "description": "React with these emoji to set your game mode role.",
+      "footer": "Remove your reaction to remove the role.",
+      "roles": [
+        "BR",
+        "Creative",
+        "STW"
+      ],
+      "emoji": [
+        "victoryroyale",
+        "supplydrop",
+        "ray" 
+      ]
+    },
+    "platform": {
+      "name": "platform",
+      "title": "Platform Roles",
+      "description": "React with these emoji to set your platform role.",
+      "footer": "Remove your reaction to remove the role.",
+      "roles": [
+        "PC",
+        "Console",
+        "Mobile"
+      ],
+      "emoji": [
+        "pc",
+        "console",
+        "mobile" 
+      ]
+    }
+  }
 }
