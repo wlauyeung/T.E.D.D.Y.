@@ -1,4 +1,7 @@
 const Discord = require('discord.js');
+const Economy = require('./economy.js');
+const Utils = require('./utilities.js');
+const Blackjack = require('./blackjack.js');
 const client = new Discord.Client();
 const config = require('./config.json');
 
@@ -120,6 +123,35 @@ client.on('message', msg => {
         }
       });
     }
+  } else if (command === config.commands.blackjack) {
+    const bet = parseInt(args[0]);
+    if (!isNaN(bet)) {
+      Blackjack.createBlackjackGame(msg, bet);
+    } else {
+      Utils.reply(msg, 'Invalid Argument! Useage: !blackjack <BET>');
+    }
+  } else if (command === config.commands.hit) {
+    let senderID = msg.member.user.id;
+    if (!Blackjack.bjGames.has(senderID)) {
+      Utils.reply(msg, 'You do not have an existing game. Create one by using !blackjack <BET>');
+    } else {
+      let bj = Blackjack.bjGames.get(senderID);
+      bj.hit(msg);
+    }
+  } else if (command === config.commands.stand) {
+    let senderID = msg.member.user.id;
+    if (!Blackjack.bjGames.has(senderID)) {
+      Utils.reply(msg, 'You do not have an existing game. Create one by using !blackjack <BET>');
+    } else {
+      let bj = Blackjack.bjGames.get(senderID);
+      bj.stand(msg);
+    }
+  } else if (command === config.commands.work) {
+    Economy.work(msg);
+  } else if (command === config.commands.bal) {
+    Economy.checkBal(msg);
+  } else if (command === config.commands.lb) {
+    Economy.displayLB(client, msg);
   }
 });
 
@@ -133,7 +165,7 @@ client.on('raw', async packet => {
   let reaction = message.reactions.get((packet.d.emoji.id) ?
       `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name);
   if (!reaction) {
-    reaction = new MessageReaction(message, new Emoji(client.guilds
+    reaction = new Discord.MessageReaction(message, new Discord.Emoji(client.guilds
         .get(packet.d.guild_id), packet.d.emoji), 1, packet.d.user_id ===
             client.user.id);
   }

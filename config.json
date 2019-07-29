@@ -2,7 +2,13 @@
   "token": "",
   "prefix": "!",
   "commands": {
-    "setreactrole": "setreactrole"
+    "setreactrole": "setreactrole",
+    "blackjack": "blackjack",
+    "hit": "hit",
+    "stand": "stand",
+    "work": "work",
+    "bal": "bal",
+    "lb": "lb"
   },
   "reactionRoles": {
     "denizen": {
