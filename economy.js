@@ -11,10 +11,10 @@ module.exports = class Economy {
         if (result.length > 0) {
           const currentDate = new Date();
           const reloadDate = result[0].reload_date.split("-");
-          const reloadMonth = parseInt(reloadDate[1]) + 1;
+          const reloadMonth = parseInt(reloadDate[1]);
 
-          if (currentDate.getMonth() >= reloadMonth) {
-             if (currentDate.getMonth() == reloadMonth
+          if (currentDate.getMonth() + 1 >= reloadMonth) {
+             if (currentDate.getMonth() + 1 == reloadMonth
                && currentDate.getDate() < reloadMonth) {
                Utils.reply(msg, 'You have already worked today. Please wait until tomorrow.');
              } else {
