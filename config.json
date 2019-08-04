@@ -14,7 +14,8 @@
     "stand": "stand",
     "work": "work",
     "bal": "bal",
-    "lb": "lb"
+    "lb": "lb",
+	"donate": "donate"
   },
   "reactionRoles": {
     "denizen": {

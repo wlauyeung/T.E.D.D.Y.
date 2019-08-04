@@ -152,6 +152,18 @@ client.on('message', msg => {
     Economy.checkBal(msg);
   } else if (command === config.commands.lb) {
     Economy.displayLB(client, msg);
+  } else if (command === config.commands.donate) {
+    try {
+      const donee = msg.mentions.users.first();
+      const donation = parseInt(args[1]);
+      if (!isNaN(donation)) {
+        Economy.donate(msg, donee, donation);
+      } else {
+        Utils.reply(msg, 'Invalid Argument! Useage: !donate <USER> <VALUE>');
+      }
+    } catch (err) {
+      Utils.reply(msg, 'Donee not found! Please mention the user you want to donate to by typing @<USER>');
+    }
   }
 });
 

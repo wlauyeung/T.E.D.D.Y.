@@ -145,7 +145,8 @@ class Blackjack {
     if (this.player.value > 21) {
       bjGames.delete(msg.member.user.id);
       Utils.reply(msg, this.getFinalInfo() + 'You lost!');
-      Economy.removeBalance(msg, this.bet);
+      Economy.removeBalance(msg.member.user.id, this.bet)
+      Utils.reply(msg, '$' + this.bet + ' has been deducted from your balance!');
     } else {
       Utils.reply(msg, this.getInfo());
     }
@@ -159,16 +160,19 @@ class Blackjack {
     if(this.dealer.value < 22) {
       if (this.player.value > this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg, this.bet);
+        Economy.addBalance(msg.member.user.id, this.bet)
+        Utils.reply(msg, '$' + this.bet + ' has been added to your balance!');
       } else if (this.player.value == this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + "It's a draw! Try again!");
       } else {
         Utils.reply(msg, this.getFinalInfo() + 'You lost!');
-        Economy.removeBalance(msg, this.bet);
+        Economy.removeBalance(msg.member.user.id, this.bet)
+        Utils.reply(msg, '$' + this.bet + ' has been deducted from your balance!');
       }
     } else {
         Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg, this.bet);
+        Economy.addBalance(msg.member.user.id, this.bet)
+        Utils.reply(msg, '$' + this.bet + ' has been added to your balance!');
     }
     
     bjGames.delete(msg.member.user.id);
