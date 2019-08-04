@@ -1,4 +1,10 @@
 {
+  "mysql": {
+    "host": "",
+    "user": "",
+    "password": "",
+    "database": ""
+  },
   "token": "",
   "prefix": "!",
   "commands": {

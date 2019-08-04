@@ -159,7 +159,7 @@ class Blackjack {
     if(this.dealer.value < 22) {
       if (this.player.value > this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg, this.bet * 2);
+        Economy.addBalance(msg, this.bet);
       } else if (this.player.value == this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + "It's a draw! Try again!");
       } else {
@@ -168,7 +168,7 @@ class Blackjack {
       }
     } else {
         Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg, this.bet * 2);
+        Economy.addBalance(msg, this.bet);
     }
     
     bjGames.delete(msg.member.user.id);
