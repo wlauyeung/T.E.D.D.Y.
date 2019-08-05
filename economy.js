@@ -108,8 +108,12 @@ module.exports = class Economy {
       if (err) console.error(err);
       let str = '';
       for (let i = 0; i < result.length; i++) {
-        let user = client.users.get(result[i].id);
-        str += (i + 1) + '. ' + user.tag + ' - $' + result[i].balance + '\n';
+        try {
+          let user = client.users.get(result[i].id);
+          str += (i + 1) + '. ' + user.tag + ' - $' + result[i].balance + '\n';
+        } catch (err) {
+          console.log('User not found :(');
+        }
       }
 
       Utils.reply(msg, str);
