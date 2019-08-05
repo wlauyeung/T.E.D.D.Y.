@@ -44,7 +44,7 @@ module.exports = class Economy {
     const currentDate = new Date();
     let year = currentDate.getFullYear();
     let month = (currentDate.getMonth() + 1 < 9) ? '0' + (currentDate.getMonth() + 1) : (currentDate.getMonth() + 1);
-    let day = (currentDate.getDate() + 1 < 9) ? '0' + (currentDate.getDate() + 1) : (currentDate.getDate() + 1);
+    let day = (currentDate.getDate() < 9) ? '0' + currentDate.getDate() : currentDate.getDate();
     let str = year + '-' + month + '-' + day;
 
     Database.db.query("UPDATE `Users` SET `reload_date`='" + str + "' WHERE `id`=" + id
