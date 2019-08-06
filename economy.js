@@ -2,6 +2,7 @@ const Utils = require('./utilities.js');
 const Database = require('./database.js');
 
 module.exports = class Economy {
+  
   static work(msg, callback) {
     const payment = 1000;
     const id = msg.member.user.id;
@@ -49,7 +50,7 @@ module.exports = class Economy {
 
     Database.db.query("UPDATE `Users` SET `reload_date`='" + str + "' WHERE `id`=" + id
              , (err, result) => {
-      if (err) console.error(err);;
+      if (err) console.error(err);
     });
   }
 
@@ -57,7 +58,7 @@ module.exports = class Economy {
     Database.db.query('UPDATE `Users` SET `balance` = `balance` + ' + amount + ' WHERE `id`=' + id
              , (err, result) => {
       if (err) console.error(err);
-      if (result.affectedRows == 0) {
+      else if (result.affectedRows == 0) {
         this.addUserToDB(id);
         this.addBalance(id, amount);
       }
@@ -68,7 +69,7 @@ module.exports = class Economy {
       Database.db.query('UPDATE `Users` SET `balance` = `balance` - ' + amount + ' WHERE `id`=' + id
              , (err, result) => {
       if (err) console.error(err);
-      if (result.affectedRows == 0) {
+      else if (result.affectedRows == 0) {
         this.addUserToDB(id);
         this.removeBalance(id, amount);
       }
@@ -78,8 +79,10 @@ module.exports = class Economy {
   static checkBal(msg) {
     const id = msg.member.user.id;
     Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + id, (err, result) => {
-      if (err) console.error(err);
-      if (result.length > 0) {
+      if (err) {
+        console.error(err);
+        Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
+      } else if (result.length > 0) {
         Utils.reply(msg, 'Your balance is $' + result[0].balance);
       } else {
         this.addUserToDB(id);
@@ -91,7 +94,7 @@ module.exports = class Economy {
   static addUserToDB(id) {
     Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + id, (err, result) => {
       if (err) console.error(err);
-      if (result.length == 0) {
+      else if (result.length == 0) {
         Database.db.query('INSERT INTO `Users`(`id`, `balance`, `reload_date`) VALUES (' + id + ', 0, ' + "'1000-01-01')", (err, result) => {
           if (err) {
             console.error(err);
@@ -105,18 +108,21 @@ module.exports = class Economy {
 
   static displayLB(client, msg) {  
     Database.db.query('SELECT `balance`, CONVERT(`id`, CHAR(50)) AS `id` FROM `Users` ORDER BY `balance` DESC LIMIT 10;', (err, result) => {
-      if (err) console.error(err);
-      let str = '';
-      for (let i = 0; i < result.length; i++) {
-        try {
-          let user = client.users.get(result[i].id);
-          str += (i + 1) + '. ' + user.tag + ' - $' + result[i].balance + '\n';
-        } catch (err) {
-          console.log('User not found :(');
+      if (err) {
+        console.error(err);
+        Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
+      } else {
+        let str = '';
+        for (let i = 0; i < result.length; i++) {
+          try {
+            let user = client.users.get(result[i].id);
+            str += (i + 1) + '. ' + user.tag + ' - $' + result[i].balance + '\n';
+          } catch (err) {
+            console.log('User not found :(');
+          }
         }
-      }
-
-      Utils.reply(msg, str);
+        Utils.reply(msg, str);
+      }      
     });
   }
   
@@ -126,8 +132,10 @@ module.exports = class Economy {
     
     if(donorID != doneeID) {
       Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + donorID, (err, result) => {
-        if (err) console.error(err);
-        if (result.length > 0) {
+        if (err) {
+          console.error(err);
+          Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
+        } else if (result.length > 0) {
           if(result[0].balance - donation >= 0) {
             this.removeBalance(donorID, donation);
             this.addBalance(doneeID, donation);
