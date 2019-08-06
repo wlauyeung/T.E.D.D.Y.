@@ -14,18 +14,19 @@ module.exports = class Economy {
           const currentDate = new Date();
           const reloadDate = result[0].reload_date.split("-");
           const reloadMonth = parseInt(reloadDate[1]);
+          const reloadDay = parseInt(reloadDate[2]);
           
           if (currentDate.getMonth() + 1 >= reloadMonth) {
-           if (currentDate.getMonth() + 1 == reloadMonth
-             && currentDate.getDate() < reloadMonth) {
-             Utils.reply(msg, 'You have already worked today. Please wait until tomorrow.');
+            if (currentDate.getMonth() + 1 == reloadMonth
+                && currentDate.getDate() <= reloadDay) {
+               Utils.reply(msg, 'You have already worked today. Please wait until tomorrow.');
            } else {
              this.addBalance(id, payment)
              Utils.reply(msg, '$' + payment + ' has been added to your balance!');
              this.resetReloadDate(id);
            }
           } else {
-            if(currentDate.getFullYear() > parseInt(reloadDate[0])) {
+            if (currentDate.getFullYear() > parseInt(reloadDate[0])) {
               this.addBalance(id, payment)
               Utils.reply(msg, '$' + payment + ' has been added to your balance!');
               this.resetReloadDate(id);
