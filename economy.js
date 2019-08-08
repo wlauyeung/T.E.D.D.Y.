@@ -1,5 +1,6 @@
 const Utils = require('./utilities.js');
 const Database = require('./database.js');
+const config = require('./config.json');
 
 module.exports.work = function (msg) {
   const id = msg.member.user.id;
