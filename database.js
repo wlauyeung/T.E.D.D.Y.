@@ -31,10 +31,6 @@ db.on('error', function () {
   });
 });
 
-db.on('release', function (connection) {
-  console.log('Connection %d released', connection.threadId);
-});
-
 // db.end(function (err) {
   
 // });
