@@ -6,7 +6,7 @@ module.exports = class Economy {
   static work(msg, callback) {
     const payment = 1000;
     const id = msg.member.user.id;
-    Database.db.query("SELECT DATE_FORMAT(`reload_date`,'%Y-%m-%d') AS `reload_date` FROM `Users` WHERE `id`=" + id, (err, result) => {
+    Database.db.query("SELECT DATE_FORMAT(`reload_date`,'%Y-%m-%d') AS `reload_date` FROM `users` WHERE `id`=" + id, (err, result) => {
       if (err) {
         console.error(err);
       } else {
@@ -49,14 +49,14 @@ module.exports = class Economy {
     let day = (currentDate.getDate() < 9) ? '0' + currentDate.getDate() : currentDate.getDate();
     let str = year + '-' + month + '-' + day;
 
-    Database.db.query("UPDATE `Users` SET `reload_date`='" + str + "' WHERE `id`=" + id
+    Database.db.query("UPDATE `users` SET `reload_date`='" + str + "' WHERE `id`=" + id
              , (err, result) => {
       if (err) console.error(err);
     });
   }
 
   static addBalance(id, amount) {
-    Database.db.query('UPDATE `Users` SET `balance` = `balance` + ' + amount + ' WHERE `id`=' + id
+    Database.db.query('UPDATE `users` SET `balance` = `balance` + ' + amount + ' WHERE `id`=' + id
              , (err, result) => {
       if (err) console.error(err);
       else if (result.affectedRows == 0) {
@@ -67,7 +67,7 @@ module.exports = class Economy {
   }
 
   static removeBalance(id, amount) {
-      Database.db.query('UPDATE `Users` SET `balance` = `balance` - ' + amount + ' WHERE `id`=' + id
+      Database.db.query('UPDATE `users` SET `balance` = `balance` - ' + amount + ' WHERE `id`=' + id
              , (err, result) => {
       if (err) console.error(err);
       else if (result.affectedRows == 0) {
@@ -79,7 +79,7 @@ module.exports = class Economy {
 
   static checkBal(msg) {
     const id = msg.member.user.id;
-    Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + id, (err, result) => {
+    Database.db.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
       if (err) {
         console.error(err);
         Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
@@ -93,10 +93,10 @@ module.exports = class Economy {
   } 
 
   static addUserToDB(id) {
-    Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + id, (err, result) => {
+    Database.db.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
       if (err) console.error(err);
       else if (result.length == 0) {
-        Database.db.query('INSERT INTO `Users`(`id`, `balance`, `reload_date`) VALUES (' + id + ', 0, ' + "'1000-01-01')", (err, result) => {
+        Database.db.query('INSERT INTO `users`(`id`, `balance`, `reload_date`) VALUES (' + id + ', 0, ' + "'1000-01-01')", (err, result) => {
           if (err) {
             console.error(err);
           } else {
@@ -108,7 +108,7 @@ module.exports = class Economy {
   }
 
   static displayLB(client, msg) {  
-    Database.db.query('SELECT `balance`, CONVERT(`id`, CHAR(50)) AS `id` FROM `Users` ORDER BY `balance` DESC LIMIT 10;', (err, result) => {
+    Database.db.query('SELECT `balance`, CONVERT(`id`, CHAR(50)) AS `id` FROM `users` ORDER BY `balance` DESC LIMIT 10;', (err, result) => {
       if (err) {
         console.error(err);
         Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
@@ -132,7 +132,7 @@ module.exports = class Economy {
     const doneeID = donee.id;
     
     if(donorID != doneeID) {
-      Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + donorID, (err, result) => {
+      Database.db.query('SELECT `balance` FROM `users` WHERE `id`=' + donorID, (err, result) => {
         if (err) {
           console.error(err);
           Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');

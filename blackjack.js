@@ -219,7 +219,7 @@ class Blackjack {
 module.exports.createBlackjackGame = function (msg, bet) {
   const id = msg.member.user.id;
   let desc = '';
-  Database.db.query('SELECT `balance` FROM `Users` WHERE `id`=' + id, (err, result) => {
+  Database.db.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
     if (err) throw err;
     if(result.length > 0) {
       let bal = result[0].balance;
