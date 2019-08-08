@@ -140,12 +140,16 @@ class Blackjack {
   }
   
   hit(msg) {
+    let bet = this.bet;
     this.player.addCard(this.drawCard());
     
     if (this.player.value > 21) {
       bjGames.delete(msg.member.user.id);
       Utils.reply(msg, this.getFinalInfo() + 'You lost!');
-      Economy.removeBalance(msg.member.user.id, this.bet)
+        Database.getConnection(function (connection) {
+          Economy.removeBalance(connection, msg.member.user.id, bet);
+          connection.release();
+        });
       Utils.reply(msg, '$' + this.bet + ' has been deducted from your balance!');
     } else {
       Utils.reply(msg, this.getInfo());
@@ -153,6 +157,7 @@ class Blackjack {
   }
   
   stand(msg) {
+    const bet = this.bet;
     while (this.dealer.value < 17) {
       this.addCard(this.dealer);
     }
@@ -160,19 +165,29 @@ class Blackjack {
     if(this.dealer.value < 22) {
       if (this.player.value > this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg.member.user.id, this.bet)
+        Database.getConnection(function (connection) {
+          Economy.addBalance(connection, msg.member.user.id, bet);
+          connection.release();
+        });
         Utils.reply(msg, '$' + this.bet + ' has been added to your balance!');
       } else if (this.player.value == this.dealer.value) {
         Utils.reply(msg, this.getFinalInfo() + "It's a draw! Try again!");
       } else {
         Utils.reply(msg, this.getFinalInfo() + 'You lost!');
-        Economy.removeBalance(msg.member.user.id, this.bet)
+        Database.getConnection(function (connection) {
+          Economy.removeBalance(connection, msg.member.user.id, bet);
+          connection.release();
+        });
         Utils.reply(msg, '$' + this.bet + ' has been deducted from your balance!');
       }
     } else {
-        Utils.reply(msg, this.getFinalInfo() + 'You won!');
-        Economy.addBalance(msg.member.user.id, this.bet)
-        Utils.reply(msg, '$' + this.bet + ' has been added to your balance!');
+      let bet = this.bet;
+      Utils.reply(msg, this.getFinalInfo() + 'You won!');
+      Database.getConnection(function (connection) {
+        Economy.addBalance(connection, msg.member.user.id, bet);
+        connection.release();
+      });
+      Utils.reply(msg, '$' + this.bet + ' has been added to your balance!');
     }
     
     bjGames.delete(msg.member.user.id);
@@ -219,27 +234,30 @@ class Blackjack {
 module.exports.createBlackjackGame = function (msg, bet) {
   const id = msg.member.user.id;
   let desc = '';
-  Database.db.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
-    if (err) throw err;
-    if(result.length > 0) {
-      let bal = result[0].balance;
-      if(bal - bet >= 0) {
-          if (!bjGames.has(id)) {
-            let bj = new Blackjack(bet);
-            bjGames.set(id, bj);
-            desc = bj.hint();
-          } else {
-            let bj = bjGames.get(id);
-            desc = bj.hint();
-          }
-      } else {
-          desc = 'Insufficient balance. Please try again later.';
-      }
+  Database.getConnection(function (connection){
+    connection.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
+      if (err) throw err;
+      if(result.length > 0) {
+        let bal = result[0].balance;
+        if(bal - bet >= 0) {
+            if (!bjGames.has(id)) {
+              let bj = new Blackjack(bet);
+              bjGames.set(id, bj);
+              desc = bj.hint();
+            } else {
+              let bj = bjGames.get(id);
+              desc = bj.hint();
+            }
+        } else {
+            desc = 'Insufficient balance. Please try again later.';
+        }
 
-      Utils.reply(msg, desc);
-    } else {
-      Economy.addUserToDB(id);
-      this.createBlackjackGame(msg, bet);
-    }
+        Utils.reply(msg, desc);
+      } else {
+        Economy.addUserToDB(connection, id);
+        connection.release();
+        module.exports.createBlackjackGame(msg, bet);
+      }
+    });
   });
 }
