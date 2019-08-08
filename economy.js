@@ -2,38 +2,26 @@ const Utils = require('./utilities.js');
 const Database = require('./database.js');
 
 module.exports.work = function (msg) {
-  const payment = 1000;
   const id = msg.member.user.id;
-  
   Database.getConnection(function (connection) {
-    connection.query("SELECT DATE_FORMAT(`reload_date`,'%Y-%m-%d') AS `reload_date` FROM `users` WHERE `id`=" + id, (err, result) => {
-      if (err) throw err;
-      if (result.length > 0) {
-        const currentDate = new Date();
-        const reloadDate = result[0].reload_date.split("-");
-        const reloadMonth = parseInt(reloadDate[1]);
-        const reloadDay = parseInt(reloadDate[2]);
+    connection.query("SELECT UNIX_TIMESTAMP(reload_date) as reloadTime FROM users WHERE id=" + id, (err, result) => {
+      const currentDate = new Date();
+      const currentTime = Math.floor(currentDate.getTime() / 1000);    
+      const payment = config.economy.payment;
 
-        if (currentDate.getMonth() + 1 >= reloadMonth) {
-          if (currentDate.getMonth() + 1 == reloadMonth
-              && currentDate.getDate() <= reloadDay) {
-            connection.release();
-            Utils.reply(msg, 'You have already worked today. Please wait until tomorrow.');
-         } else {
-           module.exports.addBalance(connection, id, payment);
-           Utils.reply(msg, '$' + payment + ' has been added to your balance!');
-           resetReloadDate(connection, id);
-           connection.release();
-         }
+      if(err) throw err;
+      if(result.length > 0) {
+        let difference = currentTime - result[0].reloadTime;
+        let cooldown = config.economy.cooldown_timer;
+        if(difference >= cooldown) {
+          module.exports.addBalance(connection, id, payment)
+          resetReloadDate(connection, id);
+          connection.release();
+          Utils.reply(msg, '$' + payment + ' has been added to your balance!');
         } else {
-          if (currentDate.getFullYear() > parseInt(reloadDate[0])) {
-            module.exports.addBalance(id, payment)
-            Utils.reply(msg, '$' + payment + ' has been added to your balance!');
-            resetReloadDate(connection, id);
-            connection.release();
-          } else {
-            Utils.reply(msg, 'You have already worked today. Please wait until tomorrow.');
-          }
+          connection.release();
+          Utils.reply(msg, 'You worked a while ago. Please wait ' + Math.floor(((cooldown - difference) / 60)) 
+                      + ' minute(s) and ' + ((cooldown - difference) % 60) + ' second(s).');
         }
       } else {
         module.exports.addUserToDB(connection, id);
@@ -45,13 +33,9 @@ module.exports.work = function (msg) {
 }
 
 function resetReloadDate(connection, id) {
-  const currentDate = new Date();
-  let year = currentDate.getFullYear();
-  let month = (currentDate.getMonth() + 1 < 9) ? '0' + (currentDate.getMonth() + 1) : (currentDate.getMonth() + 1);
-  let day = (currentDate.getDate() < 9) ? '0' + currentDate.getDate() : currentDate.getDate();
-  let str = year + '-' + month + '-' + day;
+  const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-  connection.query("UPDATE `users` SET `reload_date`='" + str + "' WHERE `id`=" + id
+  connection.query("UPDATE `users` SET `reload_date`='" + currentDate + "' WHERE `id`=" + id
            , (err, result) => {
     if (err) throw err;
   });

@@ -15,7 +15,11 @@
     "work": "work",
     "bal": "bal",
     "lb": "lb",
-	"donate": "donate"
+    "donate": "donate"
+  },
+  "economy": {
+    "cooldown_timer": 600,
+    "payment": 1000
   },
   "reactionRoles": {
     "denizen": {
