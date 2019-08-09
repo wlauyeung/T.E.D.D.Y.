@@ -220,9 +220,10 @@ module.exports.createBlackjackGame = function (msg, bet) {
         (err, result) => {
       if (err) throw err;
       if (result.length > 0) {
-        connection.release();
         let bal = result[0].balance;
-        if (bal - bet >= 0) {
+        bet = (bet > 0) ? bet : -bet;
+        connection.release();
+        if (bal - bet >= 0 && bet != 0) {
             if (!bjGames.has(id)) {
               let bj = new Blackjack(bet);
               bjGames.set(id, bj);

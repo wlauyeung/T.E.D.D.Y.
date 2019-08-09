@@ -15,7 +15,8 @@
     "lb": "lb",
     "setreactrole": "setreactrole",
     "stand": "stand",
-    "work": "work"
+    "work": "work",
+	"roulette": "roulette"
   },
   "economy": {
     "cooldown_timer": 600,

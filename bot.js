@@ -4,6 +4,7 @@ const config = require('./config.json');
 const Utils = require('./utilities.js');
 const Blackjack = require('./blackjack.js');
 const Economy = require('./economy.js');
+const Roulette = require('./roulette.js');
 
 function generateDenizenEmbedFields() {
   return config.reactionRoles.denizen.roles.map((r, e) => {
@@ -164,6 +165,28 @@ client.on('message', msg => {
       }
     } catch (err) {
       Utils.reply(msg, 'Donee not found! Please mention the user you want to donate to by typing @<USER>');
+    }
+  } else if (command === config.commands.roulette) {
+    if(args[0] && args[1]) {
+      let success = true;
+      const guess = args[0].toLowerCase();
+      const bet = parseInt(args[1]);
+      if(!isNaN(bet)) {
+        switch(guess) {
+          case 'red':
+            break;
+          case 'black':
+            break;
+          case 'green':
+            break;
+          default:
+            Utils.reply(msg, 'Invalid Argument! Usage: !roulette <Red|Black|Green> <BET>');
+            success = false;
+        }
+        if(success) Roulette.createRoulette(msg, guess, bet);
+      } else {
+        Utils.reply(msg, 'Invalid Argument! Usage: !roulette <Red|Black|Green> <BET>');
+      }
     }
   }
 });
