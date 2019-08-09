@@ -22,13 +22,8 @@ module.exports.getBalanceByID = function (connection, id, callback) {
   });
 }
 
-db.on('error', function () {
-  db = MySQL.createPool({
-    host: config.mysql.host,
-    user: config.mysql.user,
-    password: config.mysql.password,
-    database: config.mysql.database
-  });
+db.on('error', function (err) {
+	if(err) throw err;
 });
 
 // db.end(function (err) {
