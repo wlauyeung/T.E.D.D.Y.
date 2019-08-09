@@ -215,11 +215,12 @@ class Blackjack {
 module.exports.createBlackjackGame = function (msg, bet) {
   const id = msg.member.user.id;
   let desc = '';
-  Database.getConnection(function (connection){
+  Database.getConnection(function (connection) {
     connection.query('SELECT `balance` FROM `users` WHERE `id`=' + id,
         (err, result) => {
       if (err) throw err;
       if (result.length > 0) {
+        connection.release();
         let bal = result[0].balance;
         if (bal - bet >= 0) {
             if (!bjGames.has(id)) {
