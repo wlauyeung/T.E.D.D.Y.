@@ -1,9 +1,9 @@
 const Discord = require('discord.js');
-const Economy = require('./economy.js');
-const Utils = require('./utilities.js');
-const Blackjack = require('./blackjack.js');
 const client = new Discord.Client();
 const config = require('./config.json');
+const Utils = require('./utilities.js');
+const Blackjack = require('./blackjack.js');
+const Economy = require('./economy.js');
 
 function generateDenizenEmbedFields() {
   return config.reactionRoles.denizen.roles.map((r, e) => {
@@ -133,7 +133,7 @@ client.on('message', msg => {
   } else if (command === config.commands.hit) {
     let senderID = msg.member.user.id;
     if (!Blackjack.bjGames.has(senderID)) {
-      Utils.reply(msg, 'You do not have an existing game. Create one by using !blackjack <BET>');
+      Utils.reply(msg,'You do not have an existing game. Create one by using !blackjack <BET>');
     } else {
       let bj = Blackjack.bjGames.get(senderID);
       bj.hit(msg);
@@ -141,7 +141,8 @@ client.on('message', msg => {
   } else if (command === config.commands.stand) {
     let senderID = msg.member.user.id;
     if (!Blackjack.bjGames.has(senderID)) {
-      Utils.reply(msg, 'You do not have an existing game. Create one by using !blackjack <BET>');
+      Utils.reply(msg,
+          'You do not have an existing game. Create one by using !blackjack <BET>');
     } else {
       let bj = Blackjack.bjGames.get(senderID);
       bj.stand(msg);

@@ -1,21 +1,21 @@
 {
+  "token": "",
+  "prefix": "!",
   "mysql": {
     "host": "",
     "user": "",
     "password": "",
     "database": ""
   },
-  "token": "",
-  "prefix": "!",
   "commands": {
-    "setreactrole": "setreactrole",
-    "blackjack": "blackjack",
-    "hit": "hit",
-    "stand": "stand",
-    "work": "work",
     "bal": "bal",
+    "blackjack": "blackjack",
+    "donate": "donate",
+    "hit": "hit",
     "lb": "lb",
-    "donate": "donate"
+    "setreactrole": "setreactrole",
+    "stand": "stand",
+    "work": "work"
   },
   "economy": {
     "cooldown_timer": 600,

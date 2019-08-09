@@ -5,24 +5,27 @@ const config = require('./config.json');
 module.exports.work = function (msg) {
   const id = msg.member.user.id;
   Database.getConnection(function (connection) {
-    connection.query("SELECT UNIX_TIMESTAMP(reload_date) as reloadTime FROM users WHERE id=" + id, (err, result) => {
+    connection.query(
+        "SELECT UNIX_TIMESTAMP(reload_date) as reloadTime FROM users WHERE id="
+            + id, (err, result) => {
       const currentDate = new Date();
-      const currentTime = Math.floor(currentDate.getTime() / 1000);    
+      const currentTime = Math.floor(currentDate.getTime() / 1000);
       const payment = config.economy.payment;
-
-      if(err) throw err;
-      if(result.length > 0) {
+      if (err) throw err;
+      if (result.length > 0) {
         let difference = currentTime - result[0].reloadTime;
         let cooldown = config.economy.cooldown_timer;
         if(difference >= cooldown) {
           module.exports.addBalance(connection, id, payment)
           resetReloadDate(connection, id);
           connection.release();
-          Utils.reply(msg, '$' + payment + ' has been added to your balance!');
+          Utils.reply(msg, '$' + payment +
+              ' has been added to your balance!');
         } else {
           connection.release();
-          Utils.reply(msg, 'You worked a while ago. Please wait ' + Math.floor(((cooldown - difference) / 60)) 
-                      + ' minute(s) and ' + ((cooldown - difference) % 60) + ' second(s).');
+          Utils.reply(msg, 'You worked a while ago. Please wait ' +
+              Math.floor(((cooldown - difference) / 60)) + ' minute(s) and ' +
+                  ((cooldown - difference) % 60) + ' second(s).');
         }
       } else {
         module.exports.addUserToDB(connection, id);
@@ -35,9 +38,8 @@ module.exports.work = function (msg) {
 
 function resetReloadDate(connection, id) {
   const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-  connection.query("UPDATE `users` SET `reload_date`='" + currentDate + "' WHERE `id`=" + id
-           , (err, result) => {
+  connection.query("UPDATE `users` SET `reload_date`='" + currentDate +
+      "' WHERE `id`=" + id , (err, result) => {
     if (err) throw err;
   });
 }
@@ -45,7 +47,8 @@ function resetReloadDate(connection, id) {
 module.exports.checkBal = function (msg) {
   const id = msg.member.user.id;
   Database.getConnection(function (connection){
-      connection.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
+      connection.query('SELECT `balance` FROM `users` WHERE `id`=' +
+          id, (err, result) => {
       if (err) {
         throw err;
         Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
@@ -60,7 +63,8 @@ module.exports.checkBal = function (msg) {
 } 
 
 module.exports.displayLB = function (client, msg) {  
-  Database.db.query('SELECT `balance`, CONVERT(`id`, CHAR(50)) AS `id` FROM `users` ORDER BY `balance` DESC LIMIT 10;', (err, result) => {
+  Database.db.query('SELECT `balance`, CONVERT(`id`, CHAR(50)) AS `id` FROM `users` ORDER BY `balance` DESC LIMIT 10;',
+      (err, result) => {
     if (err) {
       throw err;
       Utils.reply(msg, 'An error has occurred! Please contact an administrator to get this resolved!');
@@ -77,13 +81,16 @@ module.exports.displayLB = function (client, msg) {
       Utils.reply(msg, str);
     }      
   });
-  }
+}
 
 module.exports.addUserToDB = function (connection, id) {
-  connection.query('SELECT `balance` FROM `users` WHERE `id`=' + id, (err, result) => {
+  connection.query('SELECT `balance` FROM `users` WHERE `id`=' +
+      id, (err, result) => {
     if (err) throw err;
     if (result.length == 0) {
-      connection.query('INSERT INTO `users`(`id`, `balance`, `reload_date`) VALUES (' + id + ', 0, ' + "'1000-01-01')", (err, result) => {
+      connection.query(
+          'INSERT INTO `users`(`id`, `balance`, `reload_date`) VALUES (' +
+              id + ', 0, ' + "'1000-01-01')", (err, result) => {
         if (err) {
           throw err;
         } else {
@@ -95,10 +102,11 @@ module.exports.addUserToDB = function (connection, id) {
 }
 
 module.exports.addBalance = function (connection, id, amount) {
-  connection.query('UPDATE `users` SET `balance` = `balance` + ' + amount + ' WHERE `id`=' + id
-           , (err, result) => {
-    if (err) throw err;
-    else if (result.affectedRows == 0) {
+  connection.query('UPDATE `users` SET `balance` = `balance` + ' + amount +
+      ' WHERE `id`=' + id, (err, result) => {
+    if (err) {
+      throw err;
+    } else if (result.affectedRows == 0) {
       module.exports.addUserToDB(connection, id);
       module.exports.addBalance(connection, id, amount);
     }
@@ -106,8 +114,8 @@ module.exports.addBalance = function (connection, id, amount) {
 }
 
 module.exports.removeBalance = function (connection, id, amount) {
-  connection.query('UPDATE `users` SET `balance` = `balance` - ' + amount + ' WHERE `id`=' + id
-           , (err, result) => {
+  connection.query('UPDATE `users` SET `balance` = `balance` - ' + amount +
+      ' WHERE `id`=' + id , (err, result) => {
     if (err) throw err;
     if (result.affectedRows == 0) {
       module.exports.addUserToDB(connection, id);
@@ -119,8 +127,7 @@ module.exports.removeBalance = function (connection, id, amount) {
 module.exports.donate = function (msg, donee, donation) {
   const donorID = msg.member.user.id;
   const doneeID = donee.id;
-  
-  if(donorID != doneeID) {
+  if (donorID != doneeID) {
     Database.getConnection(function (connection){
       Database.getBalanceByID(connection, donorID, function (result) {
         if (result.length > 0) {
@@ -128,9 +135,11 @@ module.exports.donate = function (msg, donee, donation) {
             module.exports.removeBalance(connection, donorID, donation);
             module.exports.addBalance(connection, doneeID, donation);
             connection.release();
-            Utils.reply(msg, 'You have donated $' + donation + ' to ' + donee.tag);
+            Utils.reply(msg, 'You have donated $' + donation + ' to ' +
+                donee.tag);
           } else {
-            Utils.reply(msg, 'You do not have enough balance to donate to' + donee.tag);
+            Utils.reply(msg, 'You do not have enough balance to donate to' +
+                donee.tag);
           }
         } else {
           module.exports.addUserToDB(connection, donorID);
